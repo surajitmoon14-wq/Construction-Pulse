@@ -6,6 +6,7 @@ import type { Auth, User as FirebaseUser } from 'firebase/auth'
 import api from './api'
 import { io, Socket } from 'socket.io-client'
 import { User, Notification } from '@/lib/types'
+import { socketBaseUrl } from '@/lib/api-url'
 
 interface AuthContextType {
   user: User | null
@@ -90,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await syncUserWithBackend()
           fetchNotifications()
           
-          const newSocket = io(process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000')
+          const newSocket = io(socketBaseUrl)
           newSocket.emit('join', firebaseUser.uid)
           
           newSocket.on('notification', (notification) => {

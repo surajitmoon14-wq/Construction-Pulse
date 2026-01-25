@@ -1,10 +1,9 @@
 import axios from 'axios';
 import { auth } from './firebase';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { apiBaseUrl } from './api-url';
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: apiBaseUrl,
 });
 
 api.interceptors.request.use(async (config) => {
