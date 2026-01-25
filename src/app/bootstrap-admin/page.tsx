@@ -3,12 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
-
-const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const sanitizedApiUrl = rawApiUrl.replace(/\/$/, '')
-const API_URL = sanitizedApiUrl.endsWith('/api')
-  ? sanitizedApiUrl
-  : `${sanitizedApiUrl}/api`
+import { apiBaseUrl } from '@/lib/api-url'
 
 export default function BootstrapAdminPage() {
   const [name, setName] = useState('')
@@ -27,7 +22,7 @@ export default function BootstrapAdminPage() {
 
   const checkSystemStatus = async () => {
     try {
-      const res = await axios.get(`${API_URL}/governance/status`)
+      const res = await axios.get(`${apiBaseUrl}/governance/status`)
       setInitialized(res.data.initialized)
     } catch (error) {
       console.error('Failed to check system status:', error)
@@ -53,7 +48,7 @@ export default function BootstrapAdminPage() {
     setLoading(true)
 
     try {
-      await axios.post(`${API_URL}/governance/bootstrap-admin`, {
+      await axios.post(`${apiBaseUrl}/governance/bootstrap-admin`, {
         email,
         password,
         name
