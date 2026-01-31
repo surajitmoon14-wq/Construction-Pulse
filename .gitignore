@@ -36,3 +36,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# logs
+/logs
+*.log
+
+# environment variables (contains sensitive data)
+.env.local
+.env.*.local
+
+# process IDs
+*.pid
