@@ -6,25 +6,29 @@ import { useAuth } from '@/lib/auth-context'
 import { useEffect, useState } from 'react'
 import { Site, QAReport } from '@/lib/types'
 import Link from 'next/link'
+import api from '@/lib/api'
 
 export default function EngineerDashboard() {
-  const { token, user } = useAuth()
+  const { user } = useAuth()
   const [sites, setSites] = useState<Site[]>([])
   const [reports, setReports] = useState<QAReport[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (token) {
+    if (user) {
       Promise.all([
-        fetch('/api/sites', { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json()),
-        fetch('/api/reports?limit=5', { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json()),
-      ]).then(([sitesData, reportsData]) => {
-        setSites(sitesData.sites || [])
-        setReports(reportsData.reports || [])
+        api.get('/sites'),
+        api.get('/reports?limit=5'),
+      ]).then(([sitesRes, reportsRes]) => {
+        setSites(sitesRes.data.sites || [])
+        setReports(reportsRes.data.reports || [])
+        setLoading(false)
+      }).catch((error) => {
+        console.error('Failed to fetch dashboard data:', error)
         setLoading(false)
       })
     }
-  }, [token])
+  }, [user])
 
   const pendingCount = reports.filter((r) => r.status === 'pending').length
   const approvedCount = reports.filter((r) => r.status === 'approved').length

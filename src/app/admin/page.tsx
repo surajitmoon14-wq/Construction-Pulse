@@ -6,9 +6,10 @@ import { useAuth } from '@/lib/auth-context'
 import { useEffect, useState } from 'react'
 import { AnalyticsSummary, DailyTrend, SiteComparison } from '@/lib/types'
 import Link from 'next/link'
+import api from '@/lib/api'
 
 export default function AdminDashboard() {
-  const { token } = useAuth()
+  const { user } = useAuth()
   const [analytics, setAnalytics] = useState<{
     summary: AnalyticsSummary
     dailyTrends: DailyTrend[]
@@ -17,18 +18,18 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (token) {
-      fetch('/api/analytics', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setAnalytics(data)
+    if (user) {
+      api.get('/analytics')
+        .then((res) => {
+          setAnalytics(res.data)
           setLoading(false)
         })
-        .catch(() => setLoading(false))
+        .catch((error) => {
+          console.error('Failed to fetch analytics:', error)
+          setLoading(false)
+        })
     }
-  }, [token])
+  }, [user])
 
   return (
     <AuthGuard allowedRoles={['admin']}>
